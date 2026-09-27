@@ -15,6 +15,7 @@ package alias
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -22,6 +23,9 @@ import (
 	"github.com/opencharly/sdk"
 	pb "github.com/opencharly/spec/proto"
 )
+
+//go:embed schema/*.cue
+var schemaFS embed.FS
 
 // calver is the candy's identity CalVer (advertised over Describe).
 const calver = "2026.193.1052"
@@ -32,12 +36,14 @@ func NewProvider() pb.ProviderServer { return &provider{} }
 
 // NewMeta advertises command:alias via sdk.NewMeta → BuildCapabilities so the COMPILED-IN path
 // registers it as a command provider (the host builds its dynamic Kong grammar + dispatches
-// Invoke(OpRun)). A command's args are pass-through CLI tokens, not a structured plugin_input, so
-// the capability carries no InputDef and the plugin ships no schema.
+// Invoke(OpRun)) — together with this plugin's OWN self-contained CUE schema (schema/alias.cue)
+// served over Describe. There is NO schema-less plugin: the schema is the uniform surface every
+// plugin presents, even where a command's args are pass-through CLI tokens rather than a structured
+// plugin_input (so the capability carries no InputDef).
 func NewMeta() pb.PluginMetaServer {
 	return sdk.NewMeta(calver,
 		[]sdk.ProvidedCapability{{Class: "command", Word: "alias"}},
-		nil)
+		schemaFS)
 }
 
 // CliMain is the OUT-OF-PROCESS command entry — unreachable in the canonical compiled-in
