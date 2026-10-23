@@ -41,6 +41,7 @@ charly alias uninstall <box>
 
 ## Related
 
-- Owning skill: `/charly-automation:alias` — the host command-alias surface.
+- Owning skill: `/charly-automation:alias` — the host command-alias surface, projected
+  from this candy's own `skill:` entity; the body is `.agents/skills/alias/SKILL.md`.
 - `/charly-internals:plugin` — the plugin/provider model.
 - [`opencharly/charly`](https://github.com/opencharly/charly) — the charly CLI.
